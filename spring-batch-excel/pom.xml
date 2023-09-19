@@ -45,7 +45,7 @@
 
         <java.version>17</java.version>
 
-        <spring.batch.version>4.3.7</spring.batch.version>
+        <spring.batch.version>5.0.2</spring.batch.version>
         <poi.version>4.1.2</poi.version>
 
 		<!-- Test Dependencies -->
@@ -79,6 +79,13 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework.batch</groupId>
+				<artifactId>spring-batch-bom</artifactId>
+				<version>${spring.batch.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -86,12 +93,10 @@
         <dependency>
             <groupId>org.springframework.batch</groupId>
             <artifactId>spring-batch-core</artifactId>
-            <version>${spring.batch.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.batch</groupId>
             <artifactId>spring-batch-infrastructure</artifactId>
-            <version>${spring.batch.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
