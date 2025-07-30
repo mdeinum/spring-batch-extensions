@@ -1,0 +1,27 @@
+name: Spring Batch Notion
+
+on:
+  pull_request:
+    paths:
+      - 'spring-batch-notion/**'
+  push:
+    paths:
+      - 'spring-batch-notion/**'
+
+env:
+  MAVEN_ARGS: -B -V -ntp -e -Djansi.passthrough=true -Dstyle.color=always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+      - name: Build with Maven
+        run: ./mvnw $MAVEN_ARGS verify javadoc:javadoc
+        working-directory: spring-batch-notion

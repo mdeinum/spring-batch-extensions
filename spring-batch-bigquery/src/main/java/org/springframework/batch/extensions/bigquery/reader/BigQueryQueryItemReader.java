@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,86 +27,92 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.util.Assert;
 
 import java.util.Iterator;
-import java.util.Objects;
 
 /**
  * BigQuery {@link ItemReader} that accepts simple query as the input.
  * <p>
- * Internally BigQuery Java library creates a {@link com.google.cloud.bigquery.JobConfiguration.Type#QUERY} job.
+ * Internally BigQuery Java library creates a
+ * {@link com.google.cloud.bigquery.JobConfiguration.Type#QUERY} job.
+ * <p>
  * Which means that result is coming asynchronously.
  * <p>
  * Also, worth mentioning that you should take into account concurrency limits.
  * <p>
- * Results of this query by default are stored in a shape of temporary table.
+ * Results of this query by default are stored in the shape of a temporary table.
  *
  * @param <T> your DTO type
  * @author Volodymyr Perebykivskyi
  * @since 0.2.0
- * @see <a href="https://cloud.google.com/bigquery/docs/running-queries#queries">Interactive queries</a>
- * @see <a href="https://cloud.google.com/bigquery/docs/running-queries#batch">Batch queries</a>
- * @see <a href="https://cloud.google.com/bigquery/quotas#concurrent_rate_interactive_queries">Concurrency limits</a>
+ * @see <a href=
+ * "https://cloud.google.com/bigquery/docs/running-queries#queries">Interactive
+ * queries</a>
+ * @see <a href="https://cloud.google.com/bigquery/docs/running-queries#batch">Batch
+ * queries</a>
+ * @see <a href=
+ * "https://cloud.google.com/bigquery/quotas#concurrent_rate_interactive_queries">Concurrency
+ * limits</a>
  */
 public class BigQueryQueryItemReader<T> implements ItemReader<T>, InitializingBean {
 
-    private final Log logger = LogFactory.getLog(getClass());
+	private final Log logger = LogFactory.getLog(getClass());
 
-    private BigQuery bigQuery;
-    private Converter<FieldValueList, T> rowMapper;
-    private QueryJobConfiguration jobConfiguration;
-    private Iterator<FieldValueList> iterator;
+	private BigQuery bigQuery;
 
-    /**
-     * BigQuery service, responsible for API calls.
-     *
-     * @param bigQuery BigQuery service
-     */
-    public void setBigQuery(BigQuery bigQuery) {
-        this.bigQuery = bigQuery;
-    }
+	private Converter<FieldValueList, T> rowMapper;
 
-    /**
-     * Row mapper which transforms single BigQuery row into desired type.
-     *
-     * @param rowMapper your row mapper
-     */
-    public void setRowMapper(Converter<FieldValueList, T> rowMapper) {
-        this.rowMapper = rowMapper;
-    }
+	private QueryJobConfiguration jobConfiguration;
 
-    /**
-     * Specifies query to run, destination table, etc.
-     *
-     * @param jobConfiguration BigQuery job configuration
-     */
-    public void setJobConfiguration(QueryJobConfiguration jobConfiguration) {
-        this.jobConfiguration = jobConfiguration;
-    }
+	private Iterator<FieldValueList> iterator;
 
-    @Override
-    public T read() throws Exception {
-        if (Objects.isNull(iterator)) {
-            doOpen();
-        }
+	/**
+	 * BigQuery service, responsible for API calls.
+	 * @param bigQuery BigQuery service
+	 */
+	public void setBigQuery(final BigQuery bigQuery) {
+		this.bigQuery = bigQuery;
+	}
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Reading next element");
-        }
+	/**
+	 * Row mapper which transforms single BigQuery row into a desired type.
+	 * @param rowMapper your row mapper
+	 */
+	public void setRowMapper(final Converter<FieldValueList, T> rowMapper) {
+		this.rowMapper = rowMapper;
+	}
 
-        return iterator.hasNext() ? rowMapper.convert(iterator.next()) : null;
-    }
+	/**
+	 * Specifies query to run, destination table, etc.
+	 * @param jobConfiguration BigQuery job configuration
+	 */
+	public void setJobConfiguration(final QueryJobConfiguration jobConfiguration) {
+		this.jobConfiguration = jobConfiguration;
+	}
 
-    private void doOpen() throws Exception {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Executing query");
-        }
-        iterator = bigQuery.query(jobConfiguration).getValues().iterator();
-    }
+	@Override
+	public T read() throws Exception {
+		if (iterator == null) {
+			doOpen();
+		}
 
-    @Override
-    public void afterPropertiesSet() {
-        Assert.notNull(this.bigQuery, "BigQuery service must be provided");
-        Assert.notNull(this.rowMapper, "Row mapper must be provided");
-        Assert.notNull(this.jobConfiguration, "Job configuration must be provided");
-    }
+		if (logger.isDebugEnabled()) {
+			logger.debug("Reading next element");
+		}
+
+		return iterator.hasNext() ? rowMapper.convert(iterator.next()) : null;
+	}
+
+	private void doOpen() throws Exception {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Executing query");
+		}
+		iterator = bigQuery.query(jobConfiguration).getValues().iterator();
+	}
+
+	@Override
+	public void afterPropertiesSet() {
+		Assert.notNull(this.bigQuery, "BigQuery service must be provided");
+		Assert.notNull(this.rowMapper, "Row mapper must be provided");
+		Assert.notNull(this.jobConfiguration, "Job configuration must be provided");
+	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2023 the original author or authors.
+ * Copyright 2002-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,14 @@ import org.mockito.Mockito;
 
 public abstract class AbstractBigQueryTest {
 
-    protected BigQuery prepareMockedBigQuery() {
-        BigQuery mockedBigQuery = Mockito.mock(BigQuery.class);
+	protected BigQuery prepareMockedBigQuery() {
+		BigQuery mockedBigQuery = Mockito.mock(BigQuery.class);
 
-        Mockito
-                .when(mockedBigQuery.getTable(Mockito.any()))
-                .thenReturn(null);
+		Mockito.when(mockedBigQuery.getTable(Mockito.any())).thenReturn(null);
 
-        Mockito
-                .when(mockedBigQuery.getDataset(Mockito.anyString()))
-                .thenReturn(null);
+		Mockito.when(mockedBigQuery.getDataset(Mockito.anyString())).thenReturn(null);
 
-        return mockedBigQuery;
-    }
+		return mockedBigQuery;
+	}
 
 }
